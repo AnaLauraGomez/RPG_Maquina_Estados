@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 class Program
 {
+    static Random random = new Random();
     static void Main()
     {
         Dictionary<string, int[]> personajes = new Dictionary<string, int[]>();
@@ -28,25 +29,32 @@ class Program
         int opcion = Convert.ToInt32(Console.ReadLine());
 
         string personaje = "";
+        int energiaMaxima = 0;
 
         switch (opcion)
         {
             case 1:
                 personaje = "Guerrero";
+                energiaMaxima = 12;
                 break;
 
             case 2:
                 personaje = "Mago";
+                energiaMaxima = 8;
                 break;
 
             case 3:
                 personaje = "Arquero";
+                energiaMaxima = 10;
                 break;
 
             default:
                 personaje = "Guerrero";
+                energiaMaxima = 12;
                 break;
         }
+
+        int energia = energiaMaxima; //energia consumible
 
         Console.WriteLine();
         Console.WriteLine("Elegiste: " + personaje);
@@ -54,6 +62,7 @@ class Program
         Console.WriteLine("Vida: " + personajes[personaje][0]);
         Console.WriteLine("Movimiento: " + personajes[personaje][1]);
         Console.WriteLine("Ataque: " + personajes[personaje][2]);
+        Console.WriteLine($"Energía inicial: {energia}/{energiaMaxima}");
 
         Console.WriteLine("\nLa historia comienza...");
         Console.WriteLine("Eres un aventurero en busca de gloria en Runeterra.");
@@ -78,6 +87,21 @@ class Program
             int movimiento = 0;
 
             Console.WriteLine();
+            Console.WriteLine($"ENERGÍA ACTUAL: {energia}/{energiaMaxima}");
+
+            //Verificar si el jugador tiene energía suficiente para continuar
+            if (energia <= 0)
+            {
+                Console.WriteLine("\n💀 ¡Has muerto por agotamiento! 💀");
+                Console.WriteLine("Tu cuerpo no pudo seguir en la aventura.");
+                Console.WriteLine("=================================");
+                Console.WriteLine("            GAME OVER");
+                Console.WriteLine("      Te quedaste sin energía");
+                Console.WriteLine("=================================");
+                break;
+            }
+
+            Console.WriteLine();
             Console.WriteLine("=================================");
             Console.WriteLine($"UBICACIÓN ACTUAL: {ObtenerNombreRegion(estado)}");
             Console.WriteLine("=================================");
@@ -89,11 +113,22 @@ class Program
                     Console.WriteLine("\nDemacia - La Ciudad del Acero Prístino");
                     Console.WriteLine("Las imponentes murallas blancas brillan bajo el sol.");
                     Console.WriteLine("Los ciudadanos te miran con esperanza mientras te preparas para partir.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Noxus (Tierras del Imperio)");
-                    Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
-                    Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Garen"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Noxus (Tierras del Imperio)");
+                        Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
+                        Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Noxus (Tierras del Imperio)");
+                        Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
+                        Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q1":
@@ -101,11 +136,22 @@ class Program
                     Console.WriteLine("\nNoxus - El Imperio de la Fuerza");
                     Console.WriteLine("El suelo rojo sangre y la arquitectura imponente");
                     Console.WriteLine("te recuerdan que aquí solo los fuertes sobreviven.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Demacia (Regresar a casa)");
-                    Console.WriteLine("2 = Piltover (Ciudad del Progreso)");
-                    Console.WriteLine("3 = Shurima (El Imperio del Sol)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Darius"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Demacia (Regresar a casa)");
+                        Console.WriteLine("2 = Piltover (Ciudad del Progreso)");
+                        Console.WriteLine("3 = Shurima (El Imperio del Sol)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Demacia (Regresar a casa)");
+                        Console.WriteLine("2 = Piltover (Ciudad del Progreso)");
+                        Console.WriteLine("3 = Shurima (El Imperio del Sol)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q2":
@@ -113,10 +159,20 @@ class Program
                     Console.WriteLine("\nFreljord - Las Tierras del Invierno Eterno");
                     Console.WriteLine("El viento helado azota tu rostro mientras la nieve cruje bajo tus pies.");
                     Console.WriteLine("Las leyendas dicen que aquí descansan antiguos dioses.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Demacia (Regresar al sur)");
-                    Console.WriteLine("2 = La Grieta del Invocador (Terreno sagrado)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Ashe"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Demacia (Regresar al sur)");
+                        Console.WriteLine("2 = La Grieta del Invocador (Terreno sagrado)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Demacia (Regresar al sur)");
+                        Console.WriteLine("2 = La Grieta del Invocador (Terreno sagrado)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q3":
@@ -124,10 +180,20 @@ class Program
                     Console.WriteLine("\nPiltover - La Ciudad del Progreso");
                     Console.WriteLine("Artefactos hextech brillan por doquier y máquinas voladoras");
                     Console.WriteLine("surcan los cielos. El progreso está en cada rincón.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Zaun (Las profundidades)");
-                    Console.WriteLine("2 = Noxus (Regresar al imperio)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Jayce"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Zaun (Las profundidades)");
+                        Console.WriteLine("2 = Noxus (Regresar al imperio)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Zaun (Las profundidades)");
+                        Console.WriteLine("2 = Noxus (Regresar al imperio)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q4":
@@ -135,9 +201,18 @@ class Program
                     Console.WriteLine("\nZaun - El Distrito Químico");
                     Console.WriteLine("Vapores tóxicos y luces de neón crean una atmósfera");
                     Console.WriteLine("opresiva. Los químicos y marginados gobiernan estas calles.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Piltover (Ascender nuevamente)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Singed"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Piltover (Ascender nuevamente)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Piltover (Ascender nuevamente)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q5":
@@ -145,9 +220,18 @@ class Program
                     Console.WriteLine("\nJonia - La Tierra de la Magia Primigenia");
                     Console.WriteLine("Los bosques cantan con energía espiritual y las aguas");
                     Console.WriteLine("cristalinas reflejan un cielo pintado de paz.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Aguas Estancadas (Puerto principal)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Karma"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Aguas Estancadas (Puerto principal)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Aguas Estancadas (Puerto principal)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q6":
@@ -155,10 +239,20 @@ class Program
                     Console.WriteLine("\nAguas Estancadas - El Puerto de Jonia");
                     Console.WriteLine("Barcos de todas las formas llegan y parten. Las tabernas");
                     Console.WriteLine("están llenas de marineros contando historias de monstruos marinos.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Jonia (Tierras interiores)");
-                    Console.WriteLine("2 = Islas de la Sombra (Tierras malditas)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Illaoi"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Jonia (Tierras interiores)");
+                        Console.WriteLine("2 = Islas de la Sombra (Tierras malditas)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Jonia (Tierras interiores)");
+                        Console.WriteLine("2 = Islas de la Sombra (Tierras malditas)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q7":
@@ -166,9 +260,18 @@ class Program
                     Console.WriteLine("\nIslas de la Sombra - El Reino de la Muerte");
                     Console.WriteLine("La niebla negra susurra nombres olvidados. Almas en pena");
                     Console.WriteLine("vagan sin descanso entre ruinas cubiertas de musgo.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Aguas Estancadas (Escapar de la maldición)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Thresh"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Aguas Estancadas (Escapar de la maldición)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Aguas Estancadas (Escapar de la maldición)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q8":
@@ -176,11 +279,22 @@ class Program
                     Console.WriteLine("\nShurima - El Imperio del Sol Descendente");
                     Console.WriteLine("Imponentes pirámides se alzan en el horizonte. La arena");
                     Console.WriteLine("esconde secretos de una civilización olvidada.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Noxus (Regresar al imperio)");
-                    Console.WriteLine("2 = Ixtal (Jungla elemental)");
-                    Console.WriteLine("3 = Targon (Montaña celestial)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Azir"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Noxus (Regresar al imperio)");
+                        Console.WriteLine("2 = Ixtal (Jungla elemental)");
+                        Console.WriteLine("3 = Targon (Montaña celestial)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Noxus (Regresar al imperio)");
+                        Console.WriteLine("2 = Ixtal (Jungla elemental)");
+                        Console.WriteLine("3 = Targon (Montaña celestial)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q9":
@@ -188,9 +302,18 @@ class Program
                     Console.WriteLine("\nIxtal - La Jungla Elemental");
                     Console.WriteLine("La magia elemental fluye en cada planta y criatura.");
                     Console.WriteLine("Los habitantes dominan la tierra, el fuego, el agua y el aire.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Shurima (Regresar al desierto)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Qiyana"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Shurima (Regresar al desierto)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Shurima (Regresar al desierto)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q10":
@@ -198,9 +321,18 @@ class Program
                     Console.WriteLine("\nMonte Targon - El Techo del Mundo");
                     Console.WriteLine("La cima se pierde entre las nubes. Leyendas dicen que");
                     Console.WriteLine("quien alcanza la cumbre obtiene poder divino.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Shurima (Descender de la montaña)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Leona"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Shurima (Descender de la montaña)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Shurima (Descender de la montaña)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
 
                 case "Q11":
@@ -208,10 +340,20 @@ class Program
                     Console.WriteLine("\nBandle City - El Reino Oculto de los Yordles");
                     Console.WriteLine("Todo es pequeño y colorido. Los portales mágicos brillan");
                     Console.WriteLine("por todas partes, conectando este reino con el mundo.");
-                    Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
-                    Console.WriteLine("1 = Demacia (Portal al reino humano)");
-                    Console.WriteLine("2 = Jonia (Portal a las tierras espirituales)");
-                    destino = Convert.ToInt32(Console.ReadLine());
+                    if (NPCInteractivo(ref energia, energiaMaxima, "Lulu"))
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
+                        Console.WriteLine("1 = Demacia (Portal al reino humano)");
+                        Console.WriteLine("2 = Jonia (Portal a las tierras espirituales)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¿Hacia dónde deseas dirigirte?");
+                        Console.WriteLine("1 = Demacia (Portal al reino humano)");
+                        Console.WriteLine("2 = Jonia (Portal a las tierras espirituales)");
+                        destino = Convert.ToInt32(Console.ReadLine());
+                    }
                     break;
             }
 
@@ -222,7 +364,30 @@ class Program
             Console.WriteLine("4 = Quieto (Quedarte donde estás)");
 
             movimiento = Convert.ToInt32(Console.ReadLine());
+
+            //Verificar si tiene energía suficiente para el movimiento elegido
+            if (movimiento == 2 && energia < 3)
+            {
+                Console.Clear();
+                Console.WriteLine("⚠️ ¡No tienes suficiente energía para correr! ⚠️");
+                Console.WriteLine($"Tu energía actual es {energia}, necesitas al menos 3 para correr.");
+                Console.WriteLine("Te ves obligado a caminar lentamente...");
+                movimiento = 1; // Forzar a caminar
+                Console.ReadKey();
+            }
+            else if (movimiento == 3 && energia < 4)
+            {
+                Console.Clear();
+                Console.WriteLine("⚠️ ¡No tienes suficiente energía para saltar! ⚠️");
+                Console.WriteLine($"Tu energía actual es {energia}, necesitas al menos 4 para saltar.");
+                Console.WriteLine("Te ves obligado a caminar lentamente...");
+                movimiento = 1;
+                Console.ReadKey();
+            }
+
             Console.Clear();
+
+            bool transicionExitosa = true;
 
             switch (estado)
             {
@@ -231,57 +396,105 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q1";
-                        Console.WriteLine("Caminaste con cautela hacia las fronteras de Noxus.");
-                        Console.WriteLine("Las tensiones políticas son evidentes, pero logras cruzar");
-                        Console.WriteLine("sin ser detectado por los centinelas imperiales.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q1";
+                            energia -= 2; // Caminar gasta 2 de energía
+
+                            Console.WriteLine("Caminaste con cautela hacia las fronteras de Noxus.");
+                            Console.WriteLine("Las tensiones políticas son evidentes, pero logras cruzar");
+                            Console.WriteLine("sin ser detectado por los centinelas imperiales.");
+                            Console.WriteLine($"-2 de energía (Energía restante: {energia})");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Estás demasiado agotado para caminar hacia Noxus.");
+                            Console.WriteLine("Caes desmayado en el camino y nunca despiertas.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 1 && movimiento == 2)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: El Vacío te consume 💀";
-                        Console.WriteLine("Corriste sin precaución hacia Noxus.");
-                        Console.WriteLine("Sin darte cuenta, cruzaste una grieta dimensional y");
-                        Console.WriteLine("caíste directamente en el Vacío. Criaturas de pesadilla");
-                        Console.WriteLine("te desgarran la mente mientras tu cuerpo se disuelve.");
+                        if (energia >= 4)
+                        {
+                            estado = "Q12";
+                            finalObtenido = "💀 FINAL TRÁGICO: El Vacío te consume 💀";
+                            energia -= 4;
+                            Console.WriteLine("Corriste sin precaución hacia Noxus.");
+                            Console.WriteLine("Sin darte cuenta, cruzaste una grieta dimensional y");
+                            Console.WriteLine("caíste directamente en el Vacío. Criaturas de pesadilla");
+                            Console.WriteLine("te desgarran la mente mientras tu cuerpo se disuelve.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Intentaste correr pero te faltó energía.");
+                            Console.WriteLine("Tropiezas en medio del camino y caes por un acantilado.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q2";
-                        Console.WriteLine("Atravesaste el paso de montaña hacia Freljord.");
-                        Console.WriteLine("El frío es intenso pero tu determinación te mantiene con vida.");
-                        Console.WriteLine("Las tribus nómadas te observan desde la distancia.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q2";
+                            energia -= 2;
+                            Console.WriteLine("Atravesaste el paso de montaña hacia Freljord.");
+                            Console.WriteLine("El frío es intenso pero tu determinación te mantiene con vida.");
+                            //Console.WriteLine("Las tribus nómadas te observan desde la distancia.");
+                            Console.WriteLine($"-2 de energía (Energía restante: {energia})");
+                        }
+                        else
+                        {
+                            Console.WriteLine("El frío extremo acaba con tu poca energía restante.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 2)
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: Congelado en el tiempo 💀";
+                        energia -= 3;
                         Console.WriteLine("Corriste desesperado por la nieve.");
                         Console.WriteLine("Una tormenta ancestral te atrapó. Lissandra, la bruja de hielo,");
                         Console.WriteLine("te convirtió en estatua de hielo por toda la eternidad.");
                     }
                     else if (destino == 3 && movimiento == 1)
                     {
-                        estado = "Q11";
-                        Console.WriteLine("Un portal oculto en el bosque demaciano se abre ante ti.");
-                        Console.WriteLine("Al cruzarlo, apareces en el mágico reino de Bandle City.");
+                        if (energia >= 1)
+                        {
+                            estado = "Q11";
+                            energia -= 1;
+                            Console.WriteLine("Un portal oculto en el bosque demaciano se abre ante ti.");
+                            Console.WriteLine("Al cruzarlo, apareces en el mágico reino de Bandle City.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El portal requiere energía mágica que no tienes.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 3 && movimiento == 3)
                     {
                         estado = "Q5";
+                        energia -= 2;
                         Console.WriteLine("Saltaste sobre un hongo brillante... ¡y un portal te transportó a Jonia!");
                         Console.WriteLine("Aterrizas suavemente en un campo de flores espirituales.");
                     }
                     else if (movimiento == 4)
                     {
+                        // Descansar recupera energía
+                        int recuperacion = random.Next(2, 5);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Decides quedarte en Demacia y meditar bajo el Árbol de los Invocadores.");
-                        Console.WriteLine("Ganas sabiduría y fuerzas. Decides continuar mañana.");
+                        //Console.WriteLine("Ganas sabiduría y fuerzas. Decides continuar mañana.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía. Energía actual: {energia}/{energiaMaxima}");
                         // Permanece en Q0
                     }
                     else
                     {
                         Console.WriteLine("Tu viaje falla. Te pierdes en tierras desconocidas.");
                         Console.WriteLine("Después de días vagando, regresas a Demacia desorientado.");
+                        energia -= 1;
                         // Permanece en Q0
                     }
                     break;
@@ -291,26 +504,54 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q0";
-                        Console.WriteLine("Regresas a Demacia por el mismo camino.");
-                        Console.WriteLine("Los guardias te reciben con alivio. Estás a salvo.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q0";
+                            energia -= 2;
+                            Console.WriteLine("Regresas a Demacia por el mismo camino.");
+                            Console.WriteLine("Los guardias te reciben con alivio. Estás a salvo.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("No logras llegar a Demacia, tu cuerpo no responde.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q3";
-                        Console.WriteLine("Tomas el elevador hextech hacia Piltover.");
-                        Console.WriteLine("La ciudad del progreso se extiende ante tus ojos.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q3";
+                            energia -= 2;
+                            Console.WriteLine("Tomas el elevador hextech hacia Piltover.");
+                            Console.WriteLine("La ciudad del progreso se extiende ante tus ojos.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El elevador falla por tu falta de energía.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 3 && movimiento == 1)
                     {
-                        estado = "Q8";
-                        Console.WriteLine("Cruzas el desierto durante días.");
-                        Console.WriteLine("Finalmente, las pirámides de Shurima aparecen en el horizonte.");
+                        if (energia >= 3)
+                        {
+                            estado = "Q8";
+                            energia -= 3;
+                            Console.WriteLine("Cruzas el desierto durante días.");
+                            Console.WriteLine("Finalmente, las pirámides de Shurima aparecen en el horizonte.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El desierto te consume vivo.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: La traición noxiana 💀";
+                        energia -= 3;
                         Console.WriteLine("Corriendo por los callejones de Noxus, caes en una emboscada.");
                         Console.WriteLine("Darius, el Mano de Noxus, te considera un espía y ejecuta sentencia.");
                     }
@@ -326,14 +567,18 @@ class Program
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(2, 4);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te quedas en una taberna noxiana.");
                         Console.WriteLine("Escuchas historias de guerra y estrategia. Ganas experiencia.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía. Energía actual: {energia}/{energiaMaxima}");
                         // Permanece en Q1
                     }
                     else
                     {
                         Console.WriteLine("Te confundes con las rutas noxianas.");
                         Console.WriteLine("Terminas dando vueltas sin avanzar.");
+                        energia -= 1;
                     }
                     break;
 
@@ -342,9 +587,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q0";
-                        Console.WriteLine("Regresas a Demacia por la ruta del sur.");
-                        Console.WriteLine("El frío se disipa gradualmente.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q0";
+                            energia -= 2;
+                            Console.WriteLine("Regresas a Demacia por la ruta del sur.");
+                            Console.WriteLine("El frío se disipa gradualmente.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El camino de regreso es demasiado largo para ti.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
@@ -360,6 +614,7 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: El Yeti ancestral 💀";
+                        energia -= 3;
                         Console.WriteLine("Corriendo por la tundra, despiertas a un Yeti legendario.");
                         Console.WriteLine("Willump y Nunu intentan ayudarte, pero la bestia es imparable.");
                     }
@@ -375,13 +630,17 @@ class Program
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(3, 6);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Acampas en una cueva helada.");
                         Console.WriteLine("Una manada de lobos te protege del frío. Te sientes seguro.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía. Energía actual: {energia}/{energiaMaxima}");
                     }
                     else
                     {
                         Console.WriteLine("Una avalancha te sepulta momentáneamente.");
                         Console.WriteLine("Logras salir, pero retrocedes a Freljord.");
+                        energia -= 2;
                     }
                     break;
 
@@ -390,20 +649,39 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q4";
-                        Console.WriteLine("Bajas a las profundidades de Zaun.");
-                        Console.WriteLine("El aire se vuelve pesado con químicos industriales.");
+                        if (energia >= 1)
+                        {
+                            estado = "Q4";
+                            energia -= 1;
+                            Console.WriteLine("Bajas a las profundidades de Zaun.");
+                            Console.WriteLine("El aire se vuelve pesado con químicos industriales.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("Los gases de Zaun te asfixian.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q1";
-                        Console.WriteLine("Tomas el camino terrestre hacia Noxus.");
-                        Console.WriteLine("Cruzas puentes y valles hasta llegar al imperio.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q1";
+                            energia -= 2;
+                            Console.WriteLine("Tomas el camino terrestre hacia Noxus.");
+                            Console.WriteLine("Cruzas puentes y valles hasta llegar al imperio.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El puente colapsa por tu falta de energía.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: Explosión hextech 💀";
+                        energia -= 3;
                         Console.WriteLine("Corriendo por los laboratorios, chocas con un prototipo inestable.");
                         Console.WriteLine("La explosión hextech te desintegra por completo.");
                     }
@@ -418,13 +696,17 @@ class Program
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(1, 3);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te sientas en la Fuente de la Ciencia.");
                         Console.WriteLine("Jayce te da una charla inspiradora sobre el progreso.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Te pierdes en el laberinto urbano de Piltover.");
                         Console.WriteLine("Terminas en un callejón sin salida.");
+                        energia -= 1;
                     }
                     break;
 
@@ -433,9 +715,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q3";
-                        Console.WriteLine("Tomas el elevador hacia la superficie.");
-                        Console.WriteLine("El aire limpio de Piltover te llena los pulmones.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q3";
+                            energia -= 2;
+                            Console.WriteLine("Tomas el elevador hacia la superficie.");
+                            Console.WriteLine("El aire limpio de Piltover te llena los pulmones.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El elevador se descompone y caes al vacío.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -451,18 +742,23 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: El Río Químico 💀";
+                        energia -= 2;
                         Console.WriteLine("Saltas sobre un barranco, pero caes al Río Químico.");
                         Console.WriteLine("Las toxinas te consumen en segundos.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(1, 3);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te refugias en una taberna de Zaun.");
                         Console.WriteLine("Warwick vigila la entrada. Estás a salvo por ahora.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Los vapores tóxicos te desorientan.");
                         Console.WriteLine("Terminas en el mismo lugar.");
+                        energia -= 1;
                     }
                     break;
 
@@ -471,9 +767,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q6";
-                        Console.WriteLine("Caminas hacia la costa de Jonia.");
-                        Console.WriteLine("El puerto de Aguas Estancadas aparece a lo lejos.");
+                        if (energia >= 1)
+                        {
+                            estado = "Q6";
+                            energia -= 1;
+                            Console.WriteLine("Caminas hacia la costa de Jonia.");
+                            Console.WriteLine("El puerto de Aguas Estancadas aparece a lo lejos.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El viaje a la costa te agota por completo.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -488,18 +793,23 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: El Bosque de las Almas 💀";
+                        energia -= 3;
                         Console.WriteLine("Saltas entre los árboles encantados...");
                         Console.WriteLine("Caes en un círculo de espíritus vengativos que te atrapan por siempre.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(3, 7);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Meditas junto a un manantial sagrado.");
                         Console.WriteLine("Sientes paz interior. Tus heridas se curan.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía. Energía actual: {energia}/{energiaMaxima}");
                     }
                     else
                     {
                         Console.WriteLine("Te pierdes en el laberinto espiritual.");
                         Console.WriteLine("Una niebla mágica te regresa al punto inicial.");
+                        energia -= 1;
                     }
                     break;
 
@@ -508,38 +818,62 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q5";
-                        Console.WriteLine("Regresas al interior de Jonia.");
-                        Console.WriteLine("La paz de los bosques te envuelve nuevamente.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q5";
+                            energia -= 2;
+                            Console.WriteLine("Regresas al interior de Jonia.");
+                            Console.WriteLine("La paz de los bosques te envuelve nuevamente.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("No logras regresar a través de los bosques.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q7";
-                        Console.WriteLine("Tomas un barco fantasma hacia las Islas de la Sombra.");
-                        Console.WriteLine("La niebla negra te envuelve mientras te acercas.");
+                        if (energia >= 3)
+                        {
+                            estado = "Q7";
+                            energia -= 3;
+                            Console.WriteLine("Tomas un barco fantasma hacia las Islas de la Sombra.");
+                            Console.WriteLine("La niebla negra te envuelve mientras te acercas.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El barco fantasma te recluta como marinero eterno.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
                         Console.WriteLine("Corriendo por el muelle, tropiezas con un barril.");
                         Console.WriteLine("Al caer al agua, nadas hacia la orilla sin problemas.");
+                        energia -= 1;
                         // Permanece en Q6
                     }
                     else if (movimiento == 3)
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: El Monstruo Marino 💀";
+                        energia -= 2;
                         Console.WriteLine("Saltas al agua para nadar rápido...");
                         Console.WriteLine("Un monstruo marino te devora antes de que puedas reaccionar.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(2, 5);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Entras a una taberna y escuchas leyendas.");
                         Console.WriteLine("Aprendes sobre tesoros ocultos en las Islas de la Sombra.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Las mareas te confunden.");
                         Console.WriteLine("Terminas en el mismo puerto.");
+                        energia -= 1;
                     }
                     break;
 
@@ -548,9 +882,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q6";
-                        Console.WriteLine("Tomas un bote de regreso a Aguas Estancadas.");
-                        Console.WriteLine("La niebla negra se disipa lentamente.");
+                        if (energia >= 3)
+                        {
+                            estado = "Q6";
+                            energia -= 3;
+                            Console.WriteLine("Tomas un bote de regreso a Aguas Estancadas.");
+                            Console.WriteLine("La niebla negra se disipa lentamente.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("La niebla te consume antes de escapar.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -566,18 +909,23 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: Maldición Eterna 💀";
+                        energia -= 2;
                         Console.WriteLine("Saltas sobre una fosa común...");
                         Console.WriteLine("Thresh te atrapa con su linterna y tu alma queda prisionera por siempre.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(1, 3);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te quedas inmóvil, imitando a las estatuas.");
                         Console.WriteLine("Los fantasmas pasan de largo sin detectarte.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("La niebla negra te desorienta completamente.");
                         Console.WriteLine("Terminas en una tumba marcada con tu propio nombre.");
+                        energia -= 2;
                     }
                     break;
 
@@ -587,21 +935,48 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q1";
-                        Console.WriteLine("Cruzas las montañas hacia Noxus.");
-                        Console.WriteLine("El imperio te recibe con desconfianza, pero logras pasar.");
+                        if (energia >= 3)
+                        {
+                            estado = "Q1";
+                            energia -= 3;
+                            Console.WriteLine("Cruzas las montañas hacia Noxus.");
+                            Console.WriteLine("El imperio te recibe con desconfianza, pero logras pasar.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("Las montañas son demasiado peligrosas para ti ahora.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q9";
-                        Console.WriteLine("Adentras en la jungla elemental de Ixtal.");
-                        Console.WriteLine("La flora brilla con magia primigenia.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q9";
+                            energia -= 2;
+                            Console.WriteLine("Adentras en la jungla elemental de Ixtal.");
+                            Console.WriteLine("La flora brilla con magia primigenia.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("La jungla te atrapa en sus raíces.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 3 && movimiento == 1)
                     {
-                        estado = "Q10";
-                        Console.WriteLine("Comienzas el ascenso al Monte Targon.");
-                        Console.WriteLine("La montaña es desafiante, pero la cima te llama.");
+                        if (energia >= 4)
+                        {
+                            estado = "Q10";
+                            energia -= 4;
+                            Console.WriteLine("Comienzas el ascenso al Monte Targon.");
+                            Console.WriteLine("La montaña es desafiante, pero la cima te llama.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("Caes por un risco durante el ascenso.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -621,13 +996,17 @@ class Program
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(2, 4);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te refugias bajo una pirámide del sol.");
                         Console.WriteLine("Los ancestros te protegen del calor abrasador.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Una tormenta de arena te ciega.");
                         Console.WriteLine("Terminas en el mismo oasis donde empezaste.");
+                        energia -= 1;
                     }
                     break;
 
@@ -636,9 +1015,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q8";
-                        Console.WriteLine("Sales de la jungla y regresas al desierto.");
-                        Console.WriteLine("Las arenas de Shurima te dan la bienvenida.");
+                        if (energia >= 2)
+                        {
+                            estado = "Q8";
+                            energia -= 2;
+                            Console.WriteLine("Sales de la jungla y regresas al desierto.");
+                            Console.WriteLine("Las arenas de Shurima te dan la bienvenida.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("La jungla te reclama como parte de ella.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -653,18 +1041,23 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: La Flor Devoradora 💀";
+                        energia -= 2;
                         Console.WriteLine("Saltas hacia un claro colorido...");
                         Console.WriteLine("Una planta carnívora gigante te atrapa.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(2, 5);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te sientas junto a un árbol elemental.");
                         Console.WriteLine("La energía vital te llena de poder temporal.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Te enredas en las raíces mágicas.");
                         Console.WriteLine("Un druida te guía de regreso.");
+                        energia -= 1;
                     }
                     break;
 
@@ -673,9 +1066,18 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q8";
-                        Console.WriteLine("Desciendes del Monte Targon con cuidado.");
-                        Console.WriteLine("Las piernas te tiemblan, pero llegas a salvo a Shurima.");
+                        if (energia >= 3)
+                        {
+                            estado = "Q8";
+                            energia -= 3;
+                            Console.WriteLine("Desciendes del Monte Targon con cuidado.");
+                            Console.WriteLine("Las piernas te tiemblan, pero llegas a salvo a Shurima.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("Durante el descenso, pierdes el equilibrio y caes.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -690,18 +1092,23 @@ class Program
                     {
                         estado = "Q12";
                         finalObtenido = "💀 FINAL TRÁGICO: Caída al Vacío 💀";
+                        energia -= 2;
                         Console.WriteLine("Saltas desde un risco hacia las nubes...");
                         Console.WriteLine("Pero caes al abismo que conecta con el Vacío.");
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(2, 4);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Meditas en un risco sagrado.");
                         Console.WriteLine("Una visión del futuro te muestra tu destino.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía.");
                     }
                     else
                     {
                         Console.WriteLine("Un ventarrón casi te derriba.");
                         Console.WriteLine("Te aferras a la montaña y no avanzas.");
+                        energia -= 1;
                     }
                     break;
 
@@ -710,15 +1117,33 @@ class Program
 
                     if (destino == 1 && movimiento == 1)
                     {
-                        estado = "Q0";
-                        Console.WriteLine("Tomas el portal hacia Demacia.");
-                        Console.WriteLine("Apareces en el bosque donde empezó tu aventura.");
+                        if (energia >= 1)
+                        {
+                            estado = "Q0";
+                            energia -= 1;
+                            Console.WriteLine("Tomas el portal hacia Demacia.");
+                            Console.WriteLine("Apareces en el bosque donde empezó tu aventura.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("El portal se cierra antes de que puedas cruzarlo.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (destino == 2 && movimiento == 1)
                     {
-                        estado = "Q5";
-                        Console.WriteLine("El portal te lleva directamente a Jonia.");
-                        Console.WriteLine("Tu entrada causa sorpresa entre los aldeanos.");
+                        if (energia >= 1)
+                        {
+                            estado = "Q5";
+                            energia -= 1;
+                            Console.WriteLine("El portal te lleva directamente a Jonia.");
+                            Console.WriteLine("Tu entrada causa sorpresa entre los aldeanos.");
+                    }
+                        else
+                        {
+                            Console.WriteLine("La magia del portal te agota por completo.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 2)
                     {
@@ -740,15 +1165,33 @@ class Program
                     }
                     else if (movimiento == 4)
                     {
+                        int recuperacion = random.Next(3, 7);
+                        energia = Math.Min(energia + recuperacion, energiaMaxima);
                         Console.WriteLine("Te quedas en la plaza principal.");
                         Console.WriteLine("Los yordles te ofrecen té y pastelillos.");
+                        Console.WriteLine($"Recuperas {recuperacion} de energía. Energía actual: {energia}/{energiaMaxima}");
                     }
                     else
                     {
                         Console.WriteLine("Un portal te lleva a un lugar aleatorio.");
                         Console.WriteLine("Terminas en Bandle City nuevamente.");
+                        energia -= 1;
                     }
                     break;
+            }
+
+            // Verificar si el jugador murió por falta de energía
+            if (!transicionExitosa || energia <= 0)
+            {
+                Console.WriteLine("\n═══════════════════════════════════════════");
+                Console.WriteLine("            💀 GAME OVER 💀");
+                Console.WriteLine("      Has muerto en tu aventura");
+                Console.WriteLine($"      Energía restante: {energia}");
+                Console.WriteLine("═══════════════════════════════════════════");
+                Console.WriteLine("\nPresiona cualquier tecla para salir...");
+                Console.ReadKey();
+                jugar = false;
+                break;
             }
 
 
@@ -785,6 +1228,195 @@ class Program
             }
         }
     }
+
+    // Función para manejar NPCs interactivos
+    static bool NPCInteractivo(ref int energia, int energiaMaxima, string npcNombre)
+    {
+        Console.WriteLine($"\n⚠️ ¡UN NPC SE ACERCA! ⚠️");
+        Console.WriteLine($"¡Es {npcNombre}! ¿Cómo quieres interactuar?");
+
+        // Diferentes interacciones según el NPC
+        switch (npcNombre)
+        {
+            case "Garen":
+                Console.WriteLine("Garen: '¡Por Demacia! ¿Eres amigo o enemigo?'");
+                Console.WriteLine("1 = Pelear contra Garen");
+                Console.WriteLine("2 = Escapar rápidamente");
+                Console.WriteLine("3 = Ofrecerle ayuda (puede recuperar energía)");
+                break;
+
+            case "Darius":
+                Console.WriteLine("Darius: 'Noxus te observa. ¿Tienes el valor de enfrentarme?'");
+                Console.WriteLine("1 = Pelear contra Darius");
+                Console.WriteLine("2 = Escapar sigilosamente");
+                Console.WriteLine("3 = Impresionarlo con tu fuerza (requiere energía)");
+                break;
+
+            case "Ashe":
+                Console.WriteLine("Ashe: 'Bienvenido a Freljord. ¿Buscas alianza o conflicto?'");
+                Console.WriteLine("1 = Pelear contra Ashe");
+                Console.WriteLine("2 = Escapar entre la nieve");
+                Console.WriteLine("3 = Aceptar su hospitalidad (recuperas energía)");
+                break;
+
+            case "Jayce":
+                Console.WriteLine("Jayce: '¡Interesante! ¿Quieres probar mi nuevo invento?'");
+                Console.WriteLine("1 = Pelear contra Jayce");
+                Console.WriteLine("2 = Escapar por los tejados");
+                Console.WriteLine("3 = Probar su invento (peligroso pero gratificante)");
+                break;
+
+            case "Singed":
+                Console.WriteLine("Singed: '¿Quieres probar mi nueva poción?' *risa malvada*");
+                Console.WriteLine("1 = Pelear contra Singed");
+                Console.WriteLine("2 = Escapar antes de que te envenene");
+                Console.WriteLine("3 = Tomar la poción (efecto aleatorio)");
+                break;
+
+            case "Karma":
+                Console.WriteLine("Karma: 'Paz y equilibrio. ¿Necesitas sanación?'");
+                Console.WriteLine("1 = Pelear contra Karma");
+                Console.WriteLine("2 = Escapar de su templo");
+                Console.WriteLine("3 = Recibir su bendición (recuperas mucha energía)");
+                break;
+
+            case "Illaoi":
+                Console.WriteLine("Illaoi: '¡El movimiento es vida! ¿Aceptas el desafío?'");
+                Console.WriteLine("1 = Pelear contra Illaoi");
+                Console.WriteLine("2 = Escapar al barco");
+                Console.WriteLine("3 = Aceptar su prueba de fe (recuperas energía si pasas)");
+                break;
+
+            case "Thresh":
+                Console.WriteLine("Thresh: 'Tu alma se ve... deliciosa' *ríe siniestramente*");
+                Console.WriteLine("1 = Pelear contra Thresh");
+                Console.WriteLine("2 = Escapar desesperadamente");
+                Console.WriteLine("3 = Negociar con él (peligroso)");
+                break;
+
+            case "Azir":
+                Console.WriteLine("Azir: '¿Eres digno de pisar Shurima?'");
+                Console.WriteLine("1 = Pelear contra Azir");
+                Console.WriteLine("2 = Escapar al desierto");
+                Console.WriteLine("3 = Demostrar tu respeto (recuperas energía)");
+                break;
+
+            case "Qiyana":
+                Console.WriteLine("Qiyana: '¿Crees que puedes igualar mi poder elemental?'");
+                Console.WriteLine("1 = Pelear contra Qiyana");
+                Console.WriteLine("2 = Escapar a la jungla");
+                Console.WriteLine("3 = Aprender de ella (gastas energía pero ganas experiencia)");
+                break;
+
+            case "Leona":
+                Console.WriteLine("Leona: 'La luz te protege, viajero. ¿Necesitas ayuda?'");
+                Console.WriteLine("1 = Pelear contra Leona");
+                Console.WriteLine("2 = Escapar al amanecer");
+                Console.WriteLine("3 = Recibir su protección (recuperas energía)");
+                break;
+
+            case "Lulu":
+                Console.WriteLine("Lulu: '¡Hora de purificar! ¿Quieres ver magia?'");
+                Console.WriteLine("1 = Pelear contra Lulu");
+                Console.WriteLine("2 = Escapar por un portal");
+                Console.WriteLine("3 = Aceptar su magia (efecto aleatorio)");
+                break;
+
+            default:
+                Console.WriteLine("1 = Pelear");
+                Console.WriteLine("2 = Escapar");
+                Console.WriteLine("3 = Negociar");
+                break;
+        }
+
+        Console.Write("\nTu elección: ");
+        int interaccion = Convert.ToInt32(Console.ReadLine());
+
+        // Sistema de pelea con números aleatorios
+        int dado = random.Next(1, 11); // Número entre 1 y 10
+
+        switch (interaccion)
+        {
+            case 1: // Pelear
+                Console.WriteLine($"\n¡Decides pelear contra {npcNombre}!");
+                Console.WriteLine($"Tiras un dado... ¡SACASTE {dado}!");
+
+                if (dado <= 5)
+                {
+                    int perdida = 6;
+                    energia -= perdida;
+                    Console.WriteLine($"Fallas en tu ataque y recibes daño grave. Pierdes {perdida} de energía.");
+                    Console.WriteLine($"Energía actual: {energia}");
+                }
+                else
+                {
+                    int perdida = 3;
+                    energia -= perdida;
+                    Console.WriteLine($"Logras defenderte bien. Pierdes solo {perdida} de energía.");
+                    Console.WriteLine($"Energía actual: {energia}");
+                }
+
+                if (energia <= 0)
+                {
+                    Console.WriteLine($"\n{npcNombre} te ha derrotado. Caes sin fuerzas...");
+                    return true;
+                }
+                break;
+
+            case 2: // Escapar
+                Console.WriteLine($"\nIntentas escapar de {npcNombre}...");
+                int costoEscapar = random.Next(2, 5);
+                energia -= costoEscapar;
+                Console.WriteLine($"Logras huir, pero pierdes {costoEscapar} de energía en el intento.");
+                Console.WriteLine($"⚡ Energía actual: {energia}");
+
+                if (energia <= 0)
+                {
+                    Console.WriteLine($"\nEl esfuerzo de escapar fue demasiado. Colapsas...");
+                    return true;
+                }
+                break;
+
+            case 3: // Opción especial (ayuda, negociar, etc.)
+                Console.WriteLine($"\nTomas una decisión diplomática con {npcNombre}...");
+                dado = random.Next(1, 11);
+                Console.WriteLine($"Tiras un dado para ver el resultado... ¡SACASTE {dado}!");
+
+                if (dado >= 7)
+                {
+                    int ganancia = random.Next(3, 7);
+                    energia = Math.Min(energia + ganancia, energiaMaxima);
+                    Console.WriteLine($"¡Interacción exitosa! {npcNombre} te ayuda. Recuperas {ganancia} de energía.");
+                    Console.WriteLine($"Energía actual: {energia}/{energiaMaxima}");
+                }
+                else if (dado >= 4)
+                {
+                    Console.WriteLine($"La interacción es neutral. No ganas ni pierdes energía.");
+                }
+                else
+                {
+                    int perdida = random.Next(2, 5);
+                    energia -= perdida;
+                    Console.WriteLine($"La interacción sale mal. Pierdes {perdida} de energía.");
+                    Console.WriteLine($"Energía actual: {energia}");
+                }
+
+                if (energia <= 0)
+                {
+                    Console.WriteLine($"\nLa interacción con {npcNombre} te dejó sin energía. 💀");
+                    return true;
+                }
+                break;
+
+            default:
+                Console.WriteLine("Acción no válida. Pierdes energía por indecisión.");
+                energia -= 2;
+                break;
+        }
+
+        return energia > 0;
+    }
+
     static string ObtenerNombreRegion(string estado)
     {
         Dictionary<string, string> regiones = new Dictionary<string, string>
