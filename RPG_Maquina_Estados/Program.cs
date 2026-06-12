@@ -6,6 +6,36 @@ using System.Collections.Generic;
 class Program
 {
     static Random random = new Random();
+    // Mapa de posibles NPCs por estado (por ahora contiene los NPCs existentes por región)
+    static Dictionary<string, string[]> encounterNPCs = new Dictionary<string, string[]>
+    {
+        { "Q0", new[] { "Garen" } },
+        { "Q1", new[] { "Darius" } },
+        { "Q2", new[] { "Ashe" } },
+        { "Q3", new[] { "Jayce" } },
+        { "Q4", new[] { "Singed" } },
+        { "Q5", new[] { "Karma" } },
+        { "Q6", new[] { "Illaoi" } },
+        { "Q7", new[] { "Thresh" } },
+        { "Q8", new[] { "Azir" } },
+        { "Q9", new[] { "Qiyana" } },
+        { "Q10", new[] { "Leona" } },
+        { "Q11", new[] { "Lulu" } }
+    };
+
+    enum EstadoPelea
+    {
+        IniciarTurno,
+        ElegirAccion,
+        ProcesarEsquiva,
+        RecibirDañoNashor,
+        ProcesarAtaque,
+        VerificarMuerteJugador,
+        VerificarMuerteNashor,
+        ReiniciarBatalla,
+        ReiniciarJuego,
+        Victoria
+    }
     static void Main()
     {
         Dictionary<string, int[]> personajes = new Dictionary<string, int[]>();
@@ -113,12 +143,13 @@ class Program
                     Console.WriteLine("\nDemacia - La Ciudad del Acero Prístino");
                     Console.WriteLine("Las imponentes murallas blancas brillan bajo el sol.");
                     Console.WriteLine("Los ciudadanos te miran con esperanza mientras te preparas para partir.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Garen"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Noxus (Tierras del Imperio)");
                         Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
                         Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
+                        Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
                         destino = Convert.ToInt32(Console.ReadLine());
                     }
                     else
@@ -127,6 +158,7 @@ class Program
                         Console.WriteLine("1 = Noxus (Tierras del Imperio)");
                         Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
                         Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
+                        Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
                         destino = Convert.ToInt32(Console.ReadLine());
                     }
                     break;
@@ -136,7 +168,7 @@ class Program
                     Console.WriteLine("\nNoxus - El Imperio de la Fuerza");
                     Console.WriteLine("El suelo rojo sangre y la arquitectura imponente");
                     Console.WriteLine("te recuerdan que aquí solo los fuertes sobreviven.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Darius"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Demacia (Regresar a casa)");
@@ -159,7 +191,7 @@ class Program
                     Console.WriteLine("\nFreljord - Las Tierras del Invierno Eterno");
                     Console.WriteLine("El viento helado azota tu rostro mientras la nieve cruje bajo tus pies.");
                     Console.WriteLine("Las leyendas dicen que aquí descansan antiguos dioses.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Ashe"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Demacia (Regresar al sur)");
@@ -180,7 +212,7 @@ class Program
                     Console.WriteLine("\nPiltover - La Ciudad del Progreso");
                     Console.WriteLine("Artefactos hextech brillan por doquier y máquinas voladoras");
                     Console.WriteLine("surcan los cielos. El progreso está en cada rincón.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Jayce"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Zaun (Las profundidades)");
@@ -201,7 +233,7 @@ class Program
                     Console.WriteLine("\nZaun - El Distrito Químico");
                     Console.WriteLine("Vapores tóxicos y luces de neón crean una atmósfera");
                     Console.WriteLine("opresiva. Los químicos y marginados gobiernan estas calles.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Singed"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Piltover (Ascender nuevamente)");
@@ -220,7 +252,7 @@ class Program
                     Console.WriteLine("\nJonia - La Tierra de la Magia Primigenia");
                     Console.WriteLine("Los bosques cantan con energía espiritual y las aguas");
                     Console.WriteLine("cristalinas reflejan un cielo pintado de paz.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Karma"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Aguas Estancadas (Puerto principal)");
@@ -239,7 +271,7 @@ class Program
                     Console.WriteLine("\nAguas Estancadas - El Puerto de Jonia");
                     Console.WriteLine("Barcos de todas las formas llegan y parten. Las tabernas");
                     Console.WriteLine("están llenas de marineros contando historias de monstruos marinos.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Illaoi"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Jonia (Tierras interiores)");
@@ -260,7 +292,7 @@ class Program
                     Console.WriteLine("\nIslas de la Sombra - El Reino de la Muerte");
                     Console.WriteLine("La niebla negra susurra nombres olvidados. Almas en pena");
                     Console.WriteLine("vagan sin descanso entre ruinas cubiertas de musgo.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Thresh"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Aguas Estancadas (Escapar de la maldición)");
@@ -279,7 +311,7 @@ class Program
                     Console.WriteLine("\nShurima - El Imperio del Sol Descendente");
                     Console.WriteLine("Imponentes pirámides se alzan en el horizonte. La arena");
                     Console.WriteLine("esconde secretos de una civilización olvidada.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Azir"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Noxus (Regresar al imperio)");
@@ -302,7 +334,7 @@ class Program
                     Console.WriteLine("\nIxtal - La Jungla Elemental");
                     Console.WriteLine("La magia elemental fluye en cada planta y criatura.");
                     Console.WriteLine("Los habitantes dominan la tierra, el fuego, el agua y el aire.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Qiyana"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Shurima (Regresar al desierto)");
@@ -321,7 +353,7 @@ class Program
                     Console.WriteLine("\nMonte Targon - El Techo del Mundo");
                     Console.WriteLine("La cima se pierde entre las nubes. Leyendas dicen que");
                     Console.WriteLine("quien alcanza la cumbre obtiene poder divino.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Leona"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Shurima (Descender de la montaña)");
@@ -340,7 +372,7 @@ class Program
                     Console.WriteLine("\nBandle City - El Reino Oculto de los Yordles");
                     Console.WriteLine("Todo es pequeño y colorido. Los portales mágicos brillan");
                     Console.WriteLine("por todas partes, conectando este reino con el mundo.");
-                    if (NPCInteractivo(ref energia, energiaMaxima, "Lulu"))
+                    if (MaybeEncounter(ref energia, energiaMaxima, estado))
                     {
                         Console.WriteLine("\n¿Hacia dónde deseas dirigirte después del encuentro?");
                         Console.WriteLine("1 = Demacia (Portal al reino humano)");
@@ -393,7 +425,6 @@ class Program
             {
                 // DEMACIA
                 case "Q0":
-
                     if (destino == 1 && movimiento == 1)
                     {
                         if (energia >= 2)
@@ -479,6 +510,21 @@ class Program
                         energia -= 2;
                         Console.WriteLine("Saltaste sobre un hongo brillante... ¡y un portal te transportó a Jonia!");
                         Console.WriteLine("Aterrizas suavemente en un campo de flores espirituales.");
+                    }
+                    else if (destino == 4 && movimiento == 1)
+                    {
+                        if (energia >= 2)
+                        {
+                            estado = "Q13"; // Entrar a la batalla final
+                            energia -= 2;
+                            Console.WriteLine("Caminas hacia una oscura entrada en las ruinas... La Guarida del Nashor te recibe.");
+                            Console.WriteLine($"-2 de energía (Energía restante: {energia})");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No tienes energía suficiente para llegar a la guarida.");
+                            transicionExitosa = false;
+                        }
                     }
                     else if (movimiento == 4)
                     {
@@ -1178,6 +1224,13 @@ class Program
                         energia -= 1;
                     }
                     break;
+                // BATALLA FINAL: La Guarida del Nashor
+                case "Q13":
+                    Console.WriteLine("\n═══════════════════════════════════════════");
+                    Console.WriteLine("\nHas entrado a la Guarida del Nashor. Una presencia colosal te observa...");
+                    Console.WriteLine("\n═══════════════════════════════════════════");
+                    RunFinalBattle(ref energia, energiaMaxima, ref estado, ref jugar, ref finalObtenido);
+                    break;
             }
 
             // Verificar si el jugador murió por falta de energía
@@ -1368,7 +1421,7 @@ class Program
                 int costoEscapar = random.Next(2, 5);
                 energia -= costoEscapar;
                 Console.WriteLine($"Logras huir, pero pierdes {costoEscapar} de energía en el intento.");
-                Console.WriteLine($"⚡ Energía actual: {energia}");
+                Console.WriteLine($"Energía actual: {energia}");
 
                 if (energia <= 0)
                 {
@@ -1417,6 +1470,163 @@ class Program
         return energia > 0;
     }
 
+    // Decide aleatoriamente si ocurre un encuentro en la región actual y con qué NPC
+    static bool MaybeEncounter(ref int energia, int energiaMaxima, string estado)
+    {
+        int prob = random.Next(1, 11); // 1-10
+        // Menos de 6 -> no hay encuentro (1-5), 6-10 -> encuentro
+        if (prob <= 5)
+        {
+            Console.WriteLine($"\nNo encuentras a nadie en esta zona. (Tirada: {prob})");
+            return false; // No hubo encuentro
+        }
+
+        // Hay encuentro: seleccionar un NPC aleatorio del diccionario para este estado
+        string npc = "Enemigo Desconocido";
+        if (encounterNPCs.ContainsKey(estado))
+        {
+            var list = encounterNPCs[estado];
+            if (list.Length > 0)
+            {
+                npc = list[random.Next(list.Length)];
+            }
+        }
+
+        Console.WriteLine($"\n¡Encuentro aleatorio! (Tirada: {prob}) Te topas con {npc}.");
+        // Llamar a la rutina existente de interacción
+        return NPCInteractivo(ref energia, energiaMaxima, npc);
+    }
+
+    // Máquina de estados para la batalla final contra Baron Nashor
+    static void RunFinalBattle(ref int energia, int energiaMaxima, ref string estado, ref bool jugar, ref string finalObtenido)
+    {
+        int playerLife = energia;
+        int nashorLife = 10;
+        int peleaEstado = 0;
+
+        string[] ataques = new[] { "tunel magico", "rayos de vacio", "pared", "grito" };
+
+        EstadoPelea estadoPelea = EstadoPelea.IniciarTurno;
+
+        Console.WriteLine("\nComienza la batalla final contra Baron Nashor!");
+
+        int accion = 1;
+        bool esquivaExitosa = false;
+        string ataque = "";
+
+        while (nashorLife > 0 && playerLife > 0)
+        {
+            Console.WriteLine($"\nTu vida: {playerLife} | Vida de Nashor: {nashorLife} | Estado: {estadoPelea}");
+
+            switch (estadoPelea)
+            {
+                case EstadoPelea.IniciarTurno:
+                    ataque = ataques[random.Next(ataques.Length)];
+                    Console.WriteLine($"\nBaron Nashor utiliza: {ataque}!");
+                    estadoPelea = EstadoPelea.ElegirAccion;
+                    break;
+
+                case EstadoPelea.ElegirAccion:
+                    Console.WriteLine("\n¿Qué haces? 1 = Atacar | 2 = Esquivar");
+                    if (!int.TryParse(Console.ReadLine(), out accion)) accion = 1;
+
+                    if (accion == 2)
+                        estadoPelea = EstadoPelea.ProcesarEsquiva;
+                    else
+                        estadoPelea = EstadoPelea.RecibirDañoNashor;
+
+                    break;
+
+                case EstadoPelea.ProcesarEsquiva:
+                    esquivaExitosa = (random.Next(2) == 0);
+
+                    if (esquivaExitosa)
+                    {
+                        Console.WriteLine("Has esquivado con éxito.");
+                        estadoPelea = EstadoPelea.VerificarMuerteNashor;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fallaste la esquiva. Recibes 2 de daño.");
+                        playerLife -= 2;
+                        estadoPelea = EstadoPelea.VerificarMuerteJugador;
+                    }
+                    break;
+
+                case EstadoPelea.RecibirDañoNashor:
+                    playerLife -= 2;
+                    Console.WriteLine("Has recibido 2 de daño por el ataque del Nashor.");
+                    estadoPelea = EstadoPelea.VerificarMuerteJugador;
+                    break;
+
+                case EstadoPelea.VerificarMuerteJugador:
+                    if (playerLife <= 0)
+                    {
+                        Console.WriteLine("\nHas caído en la batalla.");
+                        Console.WriteLine("1 = Reiniciar batalla | 2 = Reiniciar juego");
+
+                        int choice;
+                        if (!int.TryParse(Console.ReadLine(), out choice)) choice = 1;
+
+                        if (choice == 1)
+                            estadoPelea = EstadoPelea.ReiniciarBatalla;
+                        else
+                            estadoPelea = EstadoPelea.ReiniciarJuego;
+                    }
+                    else
+                    {
+                        estadoPelea = EstadoPelea.ProcesarAtaque;
+                    }
+                    break;
+
+                case EstadoPelea.ReiniciarBatalla:
+                    playerLife = energiaMaxima;
+                    nashorLife = 10;
+                    peleaEstado = 0;
+                    Console.WriteLine("Reiniciando batalla...");
+                    estadoPelea = EstadoPelea.IniciarTurno;
+                    break;
+
+                case EstadoPelea.ReiniciarJuego:
+                    energia = energiaMaxima;
+                    estado = "Q0";
+                    Console.WriteLine("Reiniciando juego...");
+                    return;
+
+                case EstadoPelea.ProcesarAtaque:
+                    bool ataqueEficaz = (ataque == "grito" || ataque == "tunel magico");
+
+                    if (ataqueEficaz)
+                    {
+                        nashorLife -= 4;
+                        peleaEstado++;
+                        Console.WriteLine("¡Ataque efectivo! -4 vida a Nashor.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("No haces daño.");
+                    }
+
+                    estadoPelea = EstadoPelea.VerificarMuerteNashor;
+                    break;
+
+                case EstadoPelea.VerificarMuerteNashor:
+                    if (nashorLife <= 0)
+                    {
+                        Console.WriteLine("\n¡Has derrotado a Baron Nashor!");
+                        finalObtenido = "🏆 FINAL ÉPICO: Vencedor del Nashor 🏆";
+                        jugar = false;
+                        energia = Math.Max(0, playerLife);
+                        return;
+                    }
+
+                    energia = Math.Max(0, playerLife);
+                    estadoPelea = EstadoPelea.IniciarTurno;
+                    break;
+            }
+        }
+    }
+
     static string ObtenerNombreRegion(string estado)
     {
         Dictionary<string, string> regiones = new Dictionary<string, string>
@@ -1433,6 +1643,7 @@ class Program
             {"Q9", "Ixtal"},
             {"Q10", "Monte Targon"},
             {"Q11", "Bandle City"},
+            {"Q13", "La Guarida del Nashor"},
             {"Q12", "El Vacío"}
         };
 
