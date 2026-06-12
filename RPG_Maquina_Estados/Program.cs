@@ -41,7 +41,6 @@ class Program
         Dictionary<string, int[]> personajes = new Dictionary<string, int[]>();
 
         // [vida, movimiento, ataque]
-
         personajes.Add("Guerrero", new int[] { 100, 5, 20 });
         personajes.Add("Mago", new int[] { 70, 8, 30 });
         personajes.Add("Arquero", new int[] { 80, 10, 15 });
@@ -107,12 +106,20 @@ class Program
         string estado = "Q0";
         bool jugar = true;
         string finalObtenido = "";
+        bool skipNextLoop = false;
 
         Console.WriteLine();
         Console.WriteLine("Tu aventura comienza en las Tierras Altas de Demacia");
 
         while (jugar)
         {
+            if (skipNextLoop)
+            {
+                // Saltar una iteración para evitar que se muestren inmediatamente los prompts de ubicación
+                skipNextLoop = false;
+                Console.Clear();
+                continue;
+            }
             int destino = 0;
             int movimiento = 0;
 
@@ -149,7 +156,7 @@ class Program
                         Console.WriteLine("1 = Noxus (Tierras del Imperio)");
                         Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
                         Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
-                        Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
+                        //Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
                         destino = Convert.ToInt32(Console.ReadLine());
                     }
                     else
@@ -158,7 +165,7 @@ class Program
                         Console.WriteLine("1 = Noxus (Tierras del Imperio)");
                         Console.WriteLine("2 = Freljord (Tierras Heladas del Norte)");
                         Console.WriteLine("3 = Bandle City (Reino de los Yordles)");
-                        Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
+                        //Console.WriteLine("4 = La Guarida del Nashor (Probar batalla final)");
                         destino = Convert.ToInt32(Console.ReadLine());
                     }
                     break;
@@ -389,6 +396,12 @@ class Program
                     break;
             }
 
+            // Si la batalla final terminó el juego, evitar mostrar las opciones de viaje
+            if (!jugar)
+            {
+                break;
+            }
+
             Console.WriteLine("\n¿Cómo deseas viajar?");
             Console.WriteLine("1 = Caminando (Seguro pero lento)");
             Console.WriteLine("2 = Corriendo (Rápido pero arriesgado)");
@@ -430,7 +443,7 @@ class Program
                         if (energia >= 2)
                         {
                             estado = "Q1";
-                            energia -= 2; // Caminar gasta 2 de energía
+                            energia -= 1; // Caminar gasta 1 de energía
 
                             Console.WriteLine("Caminaste con cautela hacia las fronteras de Noxus.");
                             Console.WriteLine("Las tensiones políticas son evidentes, pero logras cruzar");
@@ -439,28 +452,27 @@ class Program
                         }
                         else
                         {
-                            Console.WriteLine("Estás demasiado agotado para caminar hacia Noxus.");
-                            Console.WriteLine("Caes desmayado en el camino y nunca despiertas.");
-                            transicionExitosa = false;
+                            Console.WriteLine("Estás demasiado agotado y te desplomas... pero el mundo no termina.");
+                            Console.WriteLine("Mientras tu conciencia flota, una luz ancestral te arrastra a otra cámara.");
+                            estado = "Q13"; // Transportado a la Guarida del Nashor
+                            Console.WriteLine("Al recobrar el sentido, te encuentras frente a la Guarida del Nashor.");
                         }
                     }
                     else if (destino == 1 && movimiento == 2)
                     {
                         if (energia >= 4)
                         {
-                            estado = "Q12";
-                            finalObtenido = "💀 FINAL TRÁGICO: El Vacío te consume 💀";
+                            estado = "Q13"; // Transportado a la Guarida del Nashor 
                             energia -= 4;
                             Console.WriteLine("Corriste sin precaución hacia Noxus.");
-                            Console.WriteLine("Sin darte cuenta, cruzaste una grieta dimensional y");
-                            Console.WriteLine("caíste directamente en el Vacío. Criaturas de pesadilla");
-                            Console.WriteLine("te desgarran la mente mientras tu cuerpo se disuelve.");
+                            Console.WriteLine("Un extraño portal entre dimensiones se abre y te arrastra.");
+                            Console.WriteLine("Al despertar, te encuentras frente a la Guarida del Nashor.");
                         }
                         else
                         {
-                            Console.WriteLine("Intentaste correr pero te faltó energía.");
-                            Console.WriteLine("Tropiezas en medio del camino y caes por un acantilado.");
-                            transicionExitosa = false;
+                            Console.WriteLine("Intentaste correr pero te faltó energía. Tropiezas... algo te traga la oscuridad.");
+                            estado = "Q13"; // Llevar al jugador a la batalla final
+                            Console.WriteLine("Al abrir los ojos, una enorme sala te rodea: la Guarida del Nashor.");
                         }
                     }
                     else if (destino == 2 && movimiento == 1)
@@ -482,12 +494,11 @@ class Program
                     }
                     else if (destino == 2 && movimiento == 2)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: Congelado en el tiempo 💀";
+                        estado = "Q13";
                         energia -= 3;
                         Console.WriteLine("Corriste desesperado por la nieve.");
-                        Console.WriteLine("Una tormenta ancestral te atrapó. Lissandra, la bruja de hielo,");
-                        Console.WriteLine("te convirtió en estatua de hielo por toda la eternidad.");
+                        Console.WriteLine("Una grieta de energía se abre bajo tus pies y una corriente te arrastra.");
+                        Console.WriteLine("Al recuperar el aliento, estás frente a la Guarida del Nashor.");
                     }
                     else if (destino == 3 && movimiento == 1)
                     {
@@ -497,7 +508,7 @@ class Program
                             energia -= 1;
                             Console.WriteLine("Un portal oculto en el bosque demaciano se abre ante ti.");
                             Console.WriteLine("Al cruzarlo, apareces en el mágico reino de Bandle City.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El portal requiere energía mágica que no tienes.");
@@ -556,7 +567,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Regresas a Demacia por el mismo camino.");
                             Console.WriteLine("Los guardias te reciben con alivio. Estás a salvo.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("No logras llegar a Demacia, tu cuerpo no responde.");
@@ -571,7 +582,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Tomas el elevador hextech hacia Piltover.");
                             Console.WriteLine("La ciudad del progreso se extiende ante tus ojos.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El elevador falla por tu falta de energía.");
@@ -586,7 +597,7 @@ class Program
                             energia -= 3;
                             Console.WriteLine("Cruzas el desierto durante días.");
                             Console.WriteLine("Finalmente, las pirámides de Shurima aparecen en el horizonte.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El desierto te consume vivo.");
@@ -595,11 +606,10 @@ class Program
                     }
                     else if (movimiento == 2)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: La traición noxiana 💀";
+                        estado = "Q13";
                         energia -= 3;
-                        Console.WriteLine("Corriendo por los callejones de Noxus, caes en una emboscada.");
-                        Console.WriteLine("Darius, el Mano de Noxus, te considera un espía y ejecuta sentencia.");
+                        Console.WriteLine("Corriendo por los callejones de Noxus, una sombra te envuelve y un portal aparece.");
+                        Console.WriteLine("Te arrastra a unas cámaras antiguas; al recobrar el aliento, estás frente a la Guarida del Nashor.");
                     }
                     else if (movimiento == 3)
                     {
@@ -639,7 +649,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Regresas a Demacia por la ruta del sur.");
                             Console.WriteLine("El frío se disipa gradualmente.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El camino de regreso es demasiado largo para ti.");
@@ -658,11 +668,10 @@ class Program
                     }
                     else if (movimiento == 2)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: El Yeti ancestral 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor 
                         energia -= 3;
-                        Console.WriteLine("Corriendo por la tundra, despiertas a un Yeti legendario.");
-                        Console.WriteLine("Willump y Nunu intentan ayudarte, pero la bestia es imparable.");
+                        Console.WriteLine("Corriendo por la tundra, una grieta espacial se abre bajo tus pies.");
+                        Console.WriteLine("Eres succionado hacia unas antiguas cámaras... Has llegado a la Guarida del Nashor.");
                     }
                     else if (movimiento == 3)
                     {
@@ -701,7 +710,7 @@ class Program
                             energia -= 1;
                             Console.WriteLine("Bajas a las profundidades de Zaun.");
                             Console.WriteLine("El aire se vuelve pesado con químicos industriales.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("Los gases de Zaun te asfixian.");
@@ -716,7 +725,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Tomas el camino terrestre hacia Noxus.");
                             Console.WriteLine("Cruzas puentes y valles hasta llegar al imperio.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El puente colapsa por tu falta de energía.");
@@ -725,11 +734,11 @@ class Program
                     }
                     else if (movimiento == 2)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: Explosión hextech 💀";
+                        // Evitar muertes y llevar a Nashor
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 3;
-                        Console.WriteLine("Corriendo por los laboratorios, chocas con un prototipo inestable.");
-                        Console.WriteLine("La explosión hextech te desintegra por completo.");
+                        Console.WriteLine("Corriendo por los laboratorios, un experimento falla y abre un portal.");
+                        Console.WriteLine("Eres arrastrado a través del vórtice hasta unas ruinas: la Guarida del Nashor.");
                     }
                     else if (movimiento == 3)
                     {
@@ -767,7 +776,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Tomas el elevador hacia la superficie.");
                             Console.WriteLine("El aire limpio de Piltover te llena los pulmones.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El elevador se descompone y caes al vacío.");
@@ -776,21 +785,17 @@ class Program
                     }
                     else if (movimiento == 2)
                     {
-                        Console.WriteLine("Corriendo por las tuberías de Zaun, descubres un laboratorio secreto.");
-                        Console.WriteLine("Singed, el químico loco, te ofrece una poción de inmortalidad.");
-                        Console.WriteLine("La aceptas y te conviertes en un ser inmortal pero atormentado.");
-                        Console.WriteLine("\n⚠️ FINAL MORALMENTE GRIS: La Inmortalidad Química ⚠️");
-                        Console.WriteLine("Vives para siempre, pero tu cordura se desvanece lentamente.");
-                        jugar = false;
-                        finalObtenido = "⚠️ FINAL MORALMENTE GRIS: La Inmortalidad Química ⚠️";
+                        estado = "Q13";
+                        energia -= 2;
+                        Console.WriteLine("Corriendo por las tuberías de Zaun, un flujo de energía te arrastra.");
+                        Console.WriteLine("Cuando te recuperas, una sala colosal te rodea: la Guarida del Nashor.");
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: El Río Químico 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 2;
-                        Console.WriteLine("Saltas sobre un barranco, pero caes al Río Químico.");
-                        Console.WriteLine("Las toxinas te consumen en segundos.");
+                        Console.WriteLine("Saltas sobre un barranco y caes en una corriente que te arrastra hacia un portal.");
+                        Console.WriteLine("Al salir del flujo, te encuentras ante la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -819,7 +824,7 @@ class Program
                             energia -= 1;
                             Console.WriteLine("Caminas hacia la costa de Jonia.");
                             Console.WriteLine("El puerto de Aguas Estancadas aparece a lo lejos.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El viaje a la costa te agota por completo.");
@@ -837,11 +842,10 @@ class Program
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: El Bosque de las Almas 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 3;
-                        Console.WriteLine("Saltas entre los árboles encantados...");
-                        Console.WriteLine("Caes en un círculo de espíritus vengativos que te atrapan por siempre.");
+                        Console.WriteLine("Saltas entre los árboles encantados y un portal ancestral se abre bajo ti.");
+                        Console.WriteLine("Te arrastra y despiertas frente a la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -870,7 +874,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Regresas al interior de Jonia.");
                             Console.WriteLine("La paz de los bosques te envuelve nuevamente.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("No logras regresar a través de los bosques.");
@@ -885,7 +889,7 @@ class Program
                             energia -= 3;
                             Console.WriteLine("Tomas un barco fantasma hacia las Islas de la Sombra.");
                             Console.WriteLine("La niebla negra te envuelve mientras te acercas.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El barco fantasma te recluta como marinero eterno.");
@@ -901,11 +905,10 @@ class Program
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: El Monstruo Marino 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 2;
-                        Console.WriteLine("Saltas al agua para nadar rápido...");
-                        Console.WriteLine("Un monstruo marino te devora antes de que puedas reaccionar.");
+                        Console.WriteLine("Al zambullirte en las profundidades, eres succionado por una fuerza luminosa.");
+                        Console.WriteLine("Emerges en unas cámaras antiguas: la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -934,7 +937,7 @@ class Program
                             energia -= 3;
                             Console.WriteLine("Tomas un bote de regreso a Aguas Estancadas.");
                             Console.WriteLine("La niebla negra se disipa lentamente.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("La niebla te consume antes de escapar.");
@@ -953,11 +956,10 @@ class Program
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: Maldición Eterna 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 2;
-                        Console.WriteLine("Saltas sobre una fosa común...");
-                        Console.WriteLine("Thresh te atrapa con su linterna y tu alma queda prisionera por siempre.");
+                        Console.WriteLine("Al caer en la fosa, una luz devoradora te transporta lejos.");
+                        Console.WriteLine("Al abrir los ojos, estás en la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -987,7 +989,7 @@ class Program
                             energia -= 3;
                             Console.WriteLine("Cruzas las montañas hacia Noxus.");
                             Console.WriteLine("El imperio te recibe con desconfianza, pero logras pasar.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("Las montañas son demasiado peligrosas para ti ahora.");
@@ -1002,7 +1004,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Adentras en la jungla elemental de Ixtal.");
                             Console.WriteLine("La flora brilla con magia primigenia.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("La jungla te atrapa en sus raíces.");
@@ -1017,7 +1019,7 @@ class Program
                             energia -= 4;
                             Console.WriteLine("Comienzas el ascenso al Monte Targon.");
                             Console.WriteLine("La montaña es desafiante, pero la cima te llama.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("Caes por un risco durante el ascenso.");
@@ -1067,7 +1069,7 @@ class Program
                             energia -= 2;
                             Console.WriteLine("Sales de la jungla y regresas al desierto.");
                             Console.WriteLine("Las arenas de Shurima te dan la bienvenida.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("La jungla te reclama como parte de ella.");
@@ -1085,11 +1087,10 @@ class Program
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: La Flor Devoradora 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 2;
-                        Console.WriteLine("Saltas hacia un claro colorido...");
-                        Console.WriteLine("Una planta carnívora gigante te atrapa.");
+                        Console.WriteLine("La planta te envuelve y, en vez de devorarte, te lanza a través de un portal.");
+                        Console.WriteLine("Caes en la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -1118,7 +1119,7 @@ class Program
                             energia -= 3;
                             Console.WriteLine("Desciendes del Monte Targon con cuidado.");
                             Console.WriteLine("Las piernas te tiemblan, pero llegas a salvo a Shurima.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("Durante el descenso, pierdes el equilibrio y caes.");
@@ -1136,11 +1137,10 @@ class Program
                     }
                     else if (movimiento == 3)
                     {
-                        estado = "Q12";
-                        finalObtenido = "💀 FINAL TRÁGICO: Caída al Vacío 💀";
+                        estado = "Q13"; // Transportado a la Guarida del Nashor
                         energia -= 2;
-                        Console.WriteLine("Saltas desde un risco hacia las nubes...");
-                        Console.WriteLine("Pero caes al abismo que conecta con el Vacío.");
+                        Console.WriteLine("Al saltar desde el risco, una corriente mágica te transporta a lo desconocido.");
+                        Console.WriteLine("Despiertas en la Guarida del Nashor.");
                     }
                     else if (movimiento == 4)
                     {
@@ -1169,7 +1169,7 @@ class Program
                             energia -= 1;
                             Console.WriteLine("Tomas el portal hacia Demacia.");
                             Console.WriteLine("Apareces en el bosque donde empezó tu aventura.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("El portal se cierra antes de que puedas cruzarlo.");
@@ -1184,7 +1184,7 @@ class Program
                             energia -= 1;
                             Console.WriteLine("El portal te lleva directamente a Jonia.");
                             Console.WriteLine("Tu entrada causa sorpresa entre los aldeanos.");
-                    }
+                        }
                         else
                         {
                             Console.WriteLine("La magia del portal te agota por completo.");
@@ -1229,12 +1229,38 @@ class Program
                     Console.WriteLine("\n═══════════════════════════════════════════");
                     Console.WriteLine("\nHas entrado a la Guarida del Nashor. Una presencia colosal te observa...");
                     Console.WriteLine("\n═══════════════════════════════════════════");
-                    RunFinalBattle(ref energia, energiaMaxima, ref estado, ref jugar, ref finalObtenido);
+
+                    RunFinalBattle(ref energia, energiaMaxima, ref estado, ref jugar, ref finalObtenido, ref skipNextLoop);
+
+                    if (jugar)
+                    {
+                        skipNextLoop = true;
+                        Console.Clear();
+                        continue; // REINICIA EL WHILE(JUGAR) INMEDIATAMENTE, saltándose los Game Over de abajo y el menú de viaje
+                    }
+
+                    if (skipNextLoop)
+                    {
+                        if (!jugar)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("\n═══════════════════════════════════════════");
+                            Console.WriteLine(finalObtenido);
+                            Console.WriteLine("═══════════════════════════════════════════");
+                            Console.WriteLine("\nGracias por jugar esta aventura en Runeterra.");
+                            Console.WriteLine("Presiona cualquier tecla para salir...");
+                            Console.ReadKey();
+                            Environment.Exit(0);
+                        }
+                        skipNextLoop = false;
+                        Console.Clear();
+                        continue;
+                    }
                     break;
             }
 
-            // Verificar si el jugador murió por falta de energía
-            if (!transicionExitosa || energia <= 0)
+                    // Verificar si el jugador murió por falta de energía
+                    if (!transicionExitosa || energia <= 0)
             {
                 Console.WriteLine("\n═══════════════════════════════════════════");
                 Console.WriteLine("            💀 GAME OVER 💀");
@@ -1430,7 +1456,7 @@ class Program
                 }
                 break;
 
-            case 3: // Opción especial (ayuda, negociar, etc.)
+            case 3: // Opción especial 
                 Console.WriteLine($"\nTomas una decisión diplomática con {npcNombre}...");
                 dado = random.Next(1, 11);
                 Console.WriteLine($"Tiras un dado para ver el resultado... ¡SACASTE {dado}!");
@@ -1498,31 +1524,69 @@ class Program
     }
 
     // Máquina de estados para la batalla final contra Baron Nashor
-    static void RunFinalBattle(ref int energia, int energiaMaxima, ref string estado, ref bool jugar, ref string finalObtenido)
+    static void RunFinalBattle(ref int energia, int energiaMaxima, ref string estado, ref bool jugar, ref string finalObtenido, ref bool skipNextLoop)
     {
+        // Usamos variables locales aisladas para la batalla
         int playerLife = energia;
-        int nashorLife = 10;
-        int peleaEstado = 0;
+        int nashorLife = 12;
 
         string[] ataques = new[] { "tunel magico", "rayos de vacio", "pared", "grito" };
-
         EstadoPelea estadoPelea = EstadoPelea.IniciarTurno;
 
-        Console.WriteLine("\nComienza la batalla final contra Baron Nashor!");
+        Console.WriteLine("\n═══════════════════════════════════════════");
+        Console.WriteLine(" Has entrado en la cámara colosal del Baron Nashor.");
+        Console.WriteLine(" Su aliento retumba como un trueno; las paredes palpitan con energía ancestral.");
+        Console.WriteLine(" Aquí se decide el destino de tu aventura. Observa las mecánicas: ");
+        Console.WriteLine(" - Algunos ataques del Nashor son " + "\"vulnerables\" " + "y permiten contraataques más potentes.");
+        Console.WriteLine(" - Si eliges esquivar, tienes una probabilidad de evitar todo el daño.");
+        Console.WriteLine(" - Atacar en el momento oportuno (cuando el Nashor use ataques vulnerables) inflige gran daño.");
+        Console.WriteLine("═══════════════════════════════════════════\n");
 
         int accion = 1;
         bool esquivaExitosa = false;
         string ataque = "";
 
-        while (nashorLife > 0 && playerLife > 0)
+        void PrintStatus()
         {
-            Console.WriteLine($"\nTu vida: {playerLife} | Vida de Nashor: {nashorLife} | Estado: {estadoPelea}");
+            int maxP = energiaMaxima;
+            int maxN = 12;
+            int displayPlayerLife = Math.Max(0, playerLife);
+            int displayNashorLife = Math.Max(0, nashorLife);
+            int pBar = Math.Max(0, Math.Min(10, (int)Math.Round(displayPlayerLife / (double)maxP * 10)));
+            int nBar = Math.Max(0, Math.Min(10, (int)Math.Round(displayNashorLife / (double)maxN * 10)));
 
+            Console.Write("Jugador: [");
+            Console.Write(new string('#', pBar));
+            Console.Write(new string('-', 10 - pBar));
+            Console.Write($"] {displayPlayerLife}/{maxP}\n");
+
+            Console.Write("Nashor : [");
+            Console.Write(new string('#', nBar));
+            Console.Write(new string('-', 10 - nBar));
+            Console.Write($"] {displayNashorLife}/{maxN}\n");
+        }
+
+        Console.WriteLine("Comienza la batalla final contra Baron Nashor!");
+
+        // El bucle se ejecutará de forma infinita controlada internamente por los estados
+        while (jugar)
+        {
             switch (estadoPelea)
             {
                 case EstadoPelea.IniciarTurno:
+                    Console.WriteLine();
+                    PrintStatus();
                     ataque = ataques[random.Next(ataques.Length)];
-                    Console.WriteLine($"\nBaron Nashor utiliza: {ataque}!");
+                    Console.WriteLine($"\n>> Baron Nashor prepara: {ataque.ToUpper()} <<");
+
+                    if (ataque == "grito" || ataque == "tunel magico")
+                    {
+                        Console.WriteLine("El cuerpo del Nashor queda por un instante expuesto: este ataque es vulnerable.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Este ataque es poderoso pero no deja expuesto al Nashor.");
+                    }
                     estadoPelea = EstadoPelea.ElegirAccion;
                     break;
 
@@ -1534,7 +1598,6 @@ class Program
                         estadoPelea = EstadoPelea.ProcesarEsquiva;
                     else
                         estadoPelea = EstadoPelea.RecibirDañoNashor;
-
                     break;
 
                 case EstadoPelea.ProcesarEsquiva:
@@ -1542,20 +1605,20 @@ class Program
 
                     if (esquivaExitosa)
                     {
-                        Console.WriteLine("Has esquivado con éxito.");
-                        estadoPelea = EstadoPelea.VerificarMuerteNashor;
+                        Console.WriteLine("Has realizado una esquiva perfecta: el ataque no te alcanza.");
+                        estadoPelea = EstadoPelea.ProcesarAtaque;
                     }
                     else
                     {
-                        Console.WriteLine("Fallaste la esquiva. Recibes 2 de daño.");
+                        Console.WriteLine("Fallaste la esquiva. El Nashor impacta con fuerza y recibes 2 de daño.");
                         playerLife -= 2;
                         estadoPelea = EstadoPelea.VerificarMuerteJugador;
                     }
                     break;
 
                 case EstadoPelea.RecibirDañoNashor:
+                    Console.WriteLine("Mientras atacas, el Nashor te golpea de regreso. Recibes 2 de daño.");
                     playerLife -= 2;
-                    Console.WriteLine("Has recibido 2 de daño por el ataque del Nashor.");
                     estadoPelea = EstadoPelea.VerificarMuerteJugador;
                     break;
 
@@ -1563,15 +1626,21 @@ class Program
                     if (playerLife <= 0)
                     {
                         Console.WriteLine("\nHas caído en la batalla.");
-                        Console.WriteLine("1 = Reiniciar batalla | 2 = Reiniciar juego");
+                        Console.WriteLine("1 = Reiniciar batalla | 2 = Salir del juego");
 
                         int choice;
                         if (!int.TryParse(Console.ReadLine(), out choice)) choice = 1;
 
                         if (choice == 1)
+                        {
                             estadoPelea = EstadoPelea.ReiniciarBatalla;
+                        }
                         else
-                            estadoPelea = EstadoPelea.ReiniciarJuego;
+                        {
+                            energia = 0;
+                            jugar = false;
+                            return;
+                        }
                     }
                     else
                     {
@@ -1579,32 +1648,18 @@ class Program
                     }
                     break;
 
-                case EstadoPelea.ReiniciarBatalla:
-                    playerLife = energiaMaxima;
-                    nashorLife = 10;
-                    peleaEstado = 0;
-                    Console.WriteLine("Reiniciando batalla...");
-                    estadoPelea = EstadoPelea.IniciarTurno;
-                    break;
-
-                case EstadoPelea.ReiniciarJuego:
-                    energia = energiaMaxima;
-                    estado = "Q0";
-                    Console.WriteLine("Reiniciando juego...");
-                    return;
-
                 case EstadoPelea.ProcesarAtaque:
                     bool ataqueEficaz = (ataque == "grito" || ataque == "tunel magico");
 
-                    if (ataqueEficaz)
+                    if (ataqueEficaz && accion == 1) // Solo da el golpe crítico de 4 si atacaste voluntariamente en vulnerabilidad
                     {
                         nashorLife -= 4;
-                        peleaEstado++;
-                        Console.WriteLine("¡Ataque efectivo! -4 vida a Nashor.");
+                        Console.WriteLine("¡Contraataque perfecto! Infliges -4 de vida al Nashor debido a su vulnerabilidad.");
                     }
                     else
                     {
-                        Console.WriteLine("No haces daño.");
+                        nashorLife -= 1;
+                        Console.WriteLine("Tu ataque apenas alcanza al Nashor. Infliges 1 de daño.");
                     }
 
                     estadoPelea = EstadoPelea.VerificarMuerteNashor;
@@ -1616,11 +1671,22 @@ class Program
                         Console.WriteLine("\n¡Has derrotado a Baron Nashor!");
                         finalObtenido = "🏆 FINAL ÉPICO: Vencedor del Nashor 🏆";
                         jugar = false;
-                        energia = Math.Max(0, playerLife);
-                        return;
+                        energia = Math.Max(0, playerLife); // Sincronizamos la energía solo al ganar
+                        skipNextLoop = true;
+                        return; // Rompe y sale al Main a mostrar los créditos de victoria
                     }
 
-                    energia = Math.Max(0, playerLife);
+                    // Si nadie ha muerto, el turno termina limpiamente y vuelve a iniciar sin tocar variables globales
+                    estadoPelea = EstadoPelea.IniciarTurno;
+                    break;
+
+                case EstadoPelea.ReiniciarBatalla:
+                    playerLife = energiaMaxima;
+                    nashorLife = 12;
+                    Console.WriteLine("Reiniciando batalla...");
+                    Console.WriteLine("Presiona cualquier tecla para continuar...");
+                    Console.ReadKey(true);
+                    Console.Clear();
                     estadoPelea = EstadoPelea.IniciarTurno;
                     break;
             }
